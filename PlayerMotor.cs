@@ -12,7 +12,13 @@ public class PlayerMotor : MonoBehaviour
     Vector2 moveDir;
 
     public float forwardSpeed, sidewaysSpeed, backwardsSpeed;
-    
+
+    public enum Mode
+    {
+        walking, frozen
+    }
+
+    public Mode movementMode;
 
     private void Start()
     {
@@ -45,7 +51,7 @@ public class PlayerMotor : MonoBehaviour
 
     void Move()
     {
-        if (player.movementMode == Player.Mode.walking)
+        if (movementMode == Mode.walking)
         {
             HandleWalking();
         }
