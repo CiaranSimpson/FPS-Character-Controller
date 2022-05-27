@@ -50,8 +50,9 @@ public class MouseLook : MonoBehaviour
     //rotates the camera to match the rotation values
     void UpdateCamera()
     {
+        //rotates player on the Y
         transform.Rotate(new Vector3(0, rotY, 0), Space.World);
-
+        //changes rotation of camera on the X to match desired new rotation
         cam.transform.localRotation = Quaternion.Euler(rotX, cam.transform.rotation.y, 0);
     }
 
