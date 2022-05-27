@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.InputSystem; // uses new input system 
+// could be converted to use  old one, but I dont recommend that because the new one is better in most cases
+
 
 public class MouseLook : MonoBehaviour
 {
