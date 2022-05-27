@@ -15,3 +15,5 @@ Mouselook with clamping and sensitivity settings.
 Planned for future:
 
 Proper jumping
+
+I dont intend to add crouching or leaning functionality, as the intention with this player controller is keeping it as simple as possible - I may fork this project and release a version of this with that functionality, for those who want it
