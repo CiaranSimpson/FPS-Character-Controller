@@ -27,8 +27,10 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
+        //gets usable values, updates camera using those values
         GetValues();
         UpdateCamera();
+        //keeps cursor in desired state
         ManageCursor();
 
     }
