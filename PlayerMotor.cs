@@ -7,7 +7,7 @@ public class PlayerMotor : MonoBehaviour
 {
     Rigidbody rigidBody;
     CharacterController charController;
-    Player player;
+    //Player player;
 
     Vector2 moveDir;
 
@@ -24,7 +24,7 @@ public class PlayerMotor : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         charController = GetComponent<CharacterController>();
-        player = GetComponent<Player>();
+        //player = GetComponent<Player>();
     }
 
     private void FixedUpdate()
