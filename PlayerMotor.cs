@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMotor : MonoBehaviour
 {
+
     Rigidbody rigidBody;
     CharacterController charController;
     //Player player;
@@ -12,10 +13,17 @@ public class PlayerMotor : MonoBehaviour
     Vector2 moveDir;
 
     public float forwardSpeed, sidewaysSpeed, backwardsSpeed;
+    public float jumpHeight = 1;
+    bool isJumping;
+    bool isGrounded;
+    float gravityValue = -1.7f;
 
+    //Camera cam;
+
+   
     public enum Mode
     {
-        walking, frozen
+        walking,freeCam, frozen
     }
 
     public Mode movementMode;
@@ -25,46 +33,69 @@ public class PlayerMotor : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         charController = GetComponent<CharacterController>();
         //player = GetComponent<Player>();
+        //cam = Camera.main;
     }
 
     private void FixedUpdate()
     {
-        ApplyGravity();
+        //determine if player is on ground or not
+        isGrounded = charController.isGrounded;
+
+        //if not in freecam mode, apply gravity
+        if (movementMode != Mode.freeCam)
+        {
+            ApplyGravity();
+        }
+        //move the player
         Move();
     }
 
-    public void GetMoveDir (InputAction.CallbackContext context)
+    public void GetMoveDir(InputAction.CallbackContext context)
     {
-         moveDir = context.ReadValue<Vector2>();
-        
+        //gets the currently inputted movement direction
+        moveDir = context.ReadValue<Vector2>();
+
     }
 
-    public void Jump (InputAction.CallbackContext context)
+    public void jumpEvent(InputAction.CallbackContext context)
     {
-        print(1);
         if (context.phase == InputActionPhase.Started)
         {
-            print(2);
-            rigidBody.AddForce(transform.up * 10);
+            if (isGrounded)
+            {
+                //start jumping, then stop the jumping .1 of a second later.
+                isJumping = true;
+                Invoke("killJump", 0.1f);
+            }
         }
+
     }
+
+     void killJump()
+    {
+        isJumping = false;
+    }
+
+    
 
     void Move()
     {
+        // if in walking mode
         if (movementMode == Mode.walking)
         {
-            HandleWalking();
-        }
+            //moves the character in whatever direction your inputting, moving at a specified speed
+            HandleWalking(forwardSpeed,sidewaysSpeed,backwardsSpeed, jumpHeight);
+        } 
 
     }
 
     void ApplyGravity()
     {
-
-        charController.SimpleMove(-Vector3.down * 1.3f);
+        //pull the player down by specified speed
+        charController.SimpleMove(Vector3.down * 1.3f);
     }
 
-    void HandleWalking()
+    void HandleWalking(float forwardSpeed,float sidewaysSpeed, float backwardsSpeed, float jumpHeight)
     {
         if (moveDir.y > 0.01)
         {
@@ -83,7 +114,18 @@ public class PlayerMotor : MonoBehaviour
         {
             charController.Move(-transform.right * (sidewaysSpeed));
         }
+
+        if (isJumping)
+        {
+            //Jump
+            Vector3 newVelocity = new Vector3();
+            newVelocity.y += Mathf.Sqrt((jumpHeight / 100) * -3.0f * gravityValue);
+            newVelocity.y += gravityValue * Time.deltaTime;
+            charController.Move(newVelocity);
+        }
+
     }
 
     
+
 }
