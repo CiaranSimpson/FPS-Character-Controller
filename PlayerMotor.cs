@@ -7,7 +7,7 @@ public class PlayerMotor : MonoBehaviour
 {
     Rigidbody rigidBody;
     CharacterController charController;
-    Player player;
+    
 
     Vector2 moveDir;
 
