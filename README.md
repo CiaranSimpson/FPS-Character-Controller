@@ -11,9 +11,7 @@ Full 3d movement (forwards, backwards, sideways)
 
 Mouselook with clamping and sensitivity settings.
 
+jumping
 
-Planned for future:
 
-Proper jumping
-
-I dont intend to add crouching or leaning functionality, as the intention with this player controller is keeping it as simple as possible - I may fork this project and release a version of this with that functionality, for those who want it
+I dont intend to add crouching or leaning functionality, as the intention with this player controller is keeping it as simple as possible - I may fork this project and release a version of this with that functionality, for those who want it. The controller is also designed in such a way that implementing different speeds of movement based on current state (eg move slower when crouching, or move faster when sprinting) is relatievly simple
