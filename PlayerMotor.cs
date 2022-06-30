@@ -6,48 +6,23 @@ using UnityEngine.InputSystem;
 public class PlayerMotor : MonoBehaviour
 {
 
-    Rigidbody rigidBody;
+
     CharacterController charController;
-    //Player player;
+
 
     Vector2 moveDir;
+    public float moveSpeed = 1;
 
-    public float forwardSpeed, sidewaysSpeed, backwardsSpeed;
-    public float jumpHeight = 1;
-    bool isJumping;
-    bool isGrounded;
-    float gravityValue = -1.7f;
+    public bool isWalking;
+    bool isSprinting = false;
 
-    //Camera cam;
+    Vector3 velocity;
 
-   
-    public enum Mode
-    {
-        walking,freeCam, frozen
-    }
-
-    public Mode movementMode;
+    public float jumpHeight = 3;
 
     private void Start()
     {
-        rigidBody = GetComponent<Rigidbody>();
         charController = GetComponent<CharacterController>();
-        //player = GetComponent<Player>();
-        //cam = Camera.main;
-    }
-
-    private void FixedUpdate()
-    {
-        //determine if player is on ground or not
-        isGrounded = charController.isGrounded;
-
-        //if not in freecam mode, apply gravity
-        if (movementMode != Mode.freeCam)
-        {
-            ApplyGravity();
-        }
-        //move the player
-        Move();
     }
 
     public void GetMoveDir(InputAction.CallbackContext context)
@@ -57,73 +32,68 @@ public class PlayerMotor : MonoBehaviour
 
     }
 
-    public void jumpEvent(InputAction.CallbackContext context)
+    private void Update()
     {
-        if (context.phase == InputActionPhase.Started)
+        //if player is on the ground, velocity is 0
+        if (charController.isGrounded)
         {
-            if (isGrounded)
+            velocity.y = 0;
+        }
+
+        handleSprinting();
+
+        HandleWalking();
+
+        HandleJumping();
+
+        velocity.y += Physics.gravity.y * Time.deltaTime;
+        charController.Move(velocity * Time.deltaTime);
+
+    }
+
+    private void HandleJumping()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && charController.isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.gravity.y);
+        }
+    }
+
+    private void handleSprinting()
+    {
+        //new input does not currently support holding down a key. Hence using the old input system in such cases.
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            isSprinting = true;
+        }
+        else
+        {
+            isSprinting = false;
+        }
+    }
+
+    void HandleWalking()
+    {
+        // if movedir's values are signficant enough that the player can be said to be attempting to move
+        if ((moveDir.x < 0.1f && moveDir.y < 0.1f) && (moveDir.x > -0.1f && moveDir.y > -0.1f))
+        {
+            isWalking = false;
+        }
+        else
+        {
+            //gets movement direction 
+            Vector3 move = transform.right * moveDir.x + transform.forward * moveDir.y;
+            if (!isSprinting)
             {
-                //start jumping, then stop the jumping .1 of a second later.
-                isJumping = true;
-                Invoke("killJump", 0.1f);
+                charController.Move(move * moveSpeed * Time.deltaTime);
             }
+            else
+            {
+                charController.Move(move * (moveSpeed + 8) * Time.deltaTime);
+            }
+
+            isWalking = true;
         }
-
-    }
-
-     void killJump()
-    {
-        isJumping = false;
-    }
-
-    
-
-    void Move()
-    {
-        // if in walking mode
-        if (movementMode == Mode.walking)
-        {
-            //moves the character in whatever direction your inputting, moving at a specified speed
-            HandleWalking(forwardSpeed,sidewaysSpeed,backwardsSpeed, jumpHeight);
-        } 
-
-    }
-
-    void ApplyGravity()
-    {
-        //pull the player down by specified speed
-        charController.SimpleMove(Vector3.down * 1.3f);
-    }
-
-    void HandleWalking(float forwardSpeed,float sidewaysSpeed, float backwardsSpeed, float jumpHeight)
-    {
-        if (moveDir.y > 0.01)
-        {
-            charController.Move(transform.forward * (forwardSpeed));
-        }
-        else if (moveDir.y < -0.01)
-        {
-            charController.Move(-transform.forward * (backwardsSpeed));
-        }
-
-        if (moveDir.x > 0.01)
-        {
-            charController.Move(transform.right * (sidewaysSpeed));
-        }
-        else if (moveDir.x < -0.01)
-        {
-            charController.Move(-transform.right * (sidewaysSpeed));
-        }
-
-        if (isJumping)
-        {
-            //Jump
-            Vector3 newVelocity = new Vector3();
-            newVelocity.y += Mathf.Sqrt((jumpHeight / 100) * -3.0f * gravityValue);
-            newVelocity.y += gravityValue * Time.deltaTime;
-            charController.Move(newVelocity);
-        }
-
     }
 
     
